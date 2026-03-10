@@ -26,5 +26,5 @@ def agente_noticias_energeticas():
         )
         print(f"💡 INSIGHT ESTRATÉGICO: {resumen.choices[0].message.content}")
 
-            if __name__ == "__main__":
+ if __name__ == "__main__":
                  agente_noticias_energeticas()

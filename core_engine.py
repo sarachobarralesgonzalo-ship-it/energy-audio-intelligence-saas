@@ -1,42 +1,30 @@
-# Energy & Mobility Audio Intelligence SaaS - Core Logic
-# Purpose: Automate the curation of high-value energy data for audio synthesis.
+import feedparser
+import openai
+import os
 
-class EnergyIntelligenceBot:
-    def __init__(self, niche="BESS & Mobility"):
-        self.niche = niche
-        self.target_audience = "C-Level Executives"
+# El motor buscará tu clave de OpenAI automáticamente
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    def filter_strategic_topics(self, raw_data):
-        """
-        Filters news that generates ROI for a CFO (CAEs, BESS, etc.)
-        """
-        # Palabras clave estratégicas para tu nicho
-        keywords = ["CAE", "BESS", "Grid", "Sodium-ion", "ROI", "Tax Deduction", "V2G", "Certificados de Ahorro"]
-        curated_topics = [item for item in raw_data if any(key.lower() in item.lower() for key in keywords)]
-        return curated_topics
+def agente_noticias_energeticas():
+    # Fuente de noticias líder en almacenamiento de energía
+    url_noticias = "https://www.energy-storage.news/feed/" 
+    feed = feedparser.parse(url_noticias)
+    
+    print(f"--- [RADIACIÓN POSITIVA] Analizando últimas noticias ---")
+    
+    # Analizamos las 3 noticias más recientes
+    for entry in feed.entries[:3]:
+        print(f"\n📰 NOTICIA: {entry.title}")
+        
+        # La IA actúa como tu analista senior
+        resumen = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Eres un analista experto en BESS y sector solar. Resume noticias para un CEO enfocándote en ROI y estrategia."},
+                {"role": "user", "content": f"Analiza este contenido: {entry.summary}"}
+            ]
+        )
+        print(f"💡 INSIGHT ESTRATÉGICO: {resumen.choices[0].message.content}")
 
-    def generate_briefing_prompt(self, topic):
-        """
-        Prepares the context for the audio engine (NotebookLM/LLM).
-        """
-        return f"Act as a Senior Energy Consultant. Create a strategic dialogue about: {topic}"
-
-# Simulation of the daily workflow
-if __name__ == "__main__":
-    bot = EnergyIntelligenceBot()
-    
-    # Simulación de entrada de datos (BOE, Noticias técnicas, LinkedIn)
-    raw_news = [
-        "New BESS regulations in Spain 2026", 
-        "General automotive lifestyle trends", 
-        "CAE monetization strategies for industrial fleets",
-        "Public lighting maintenance updates"
-    ]
-    
-    print(f"--- Processing for: {bot.target_audience} ---")
-    selected = bot.filter_strategic_topics(raw_news)
-    
-    print(f"Selected Strategic Topics for Audio: {selected}")
-    
-    for topic in selected:
-        print(f"\n[Generated Prompt for AI]: {bot.generate_briefing_prompt(topic)}")
+            if __name__ == "__main__":
+                 agente_noticias_energeticas()
